@@ -30,6 +30,7 @@ import org.apache.pulsar.client.admin.PulsarAdmin;
 import org.apache.pulsar.client.admin.PulsarAdminBuilder;
 import org.apache.pulsar.client.admin.Tenants;
 import org.apache.pulsar.client.admin.Topics;
+import org.apache.pulsar.client.admin.internal.PulsarAdminImpl;
 import org.apache.pulsar.client.api.Authentication;
 import org.apache.pulsar.client.api.AuthenticationDataProvider;
 import org.apache.pulsar.client.api.AuthenticationFactory;
@@ -54,6 +55,10 @@ public class PulsarAdminServiceImpl implements PulsarAdminService {
 
     @Value("${backend.broker.pulsarAdmin.tlsTrustCertsFilePath:}")
     private String tlsTrustCertsFilePath;
+    @Value("${backend.broker.pulsarAdmin.tlsCertificateFilePath:}")
+    private String tlsCertificateFilePath;
+    @Value("${backend.broker.pulsarAdmin.tlsKeyFilePath:}")
+    private String tlsKeyFilePath;
 
     @Value("${backend.broker.pulsarAdmin.tlsEnableHostnameVerification:false}")
     private Boolean tlsEnableHostnameVerification;
@@ -100,7 +105,8 @@ public class PulsarAdminServiceImpl implements PulsarAdminService {
     }
 
     public Map<String, String> getAuthHeader(String url) {
-        Authentication authentication = getPulsarAdmin(url).getClientConfigData().getAuthentication();
+        PulsarAdminImpl pulsarAdmin = (PulsarAdminImpl) getPulsarAdmin(url);
+        Authentication authentication = pulsarAdmin.getClientConfigData().getAuthentication();
         Map<String, String> result = new HashMap<>();
 
         try {
@@ -142,6 +148,8 @@ public class PulsarAdminServiceImpl implements PulsarAdminService {
             }
             pulsarAdminBuilder.allowTlsInsecureConnection(tlsAllowInsecureConnection);
             pulsarAdminBuilder.tlsTrustCertsFilePath(tlsTrustCertsFilePath);
+            pulsarAdminBuilder.tlsCertificateFilePath(tlsCertificateFilePath);
+            pulsarAdminBuilder.tlsKeyFilePath(tlsKeyFilePath);
             pulsarAdminBuilder.enableTlsHostnameVerification(tlsEnableHostnameVerification);
             return pulsarAdminBuilder.build();
         } catch (PulsarClientException e) {

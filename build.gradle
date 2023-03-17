@@ -17,6 +17,9 @@ buildscript {
     springBootVersion = '2.0.2.RELEASE'
   }
   repositories {
+      maven {
+          url 'https://maven.aliyun.com/repository/public/'
+      }
     mavenCentral()
     mavenLocal()
   }
@@ -112,6 +115,7 @@ dependencies {
     compile group: 'com.github.pagehelper', name: 'pagehelper', version: pagehelperVersion
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: springBootVersion
     compile group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion
+    compile group: 'com.mysql', name: 'mysql-connector-j', version: mysqlVersion
     compile (group: 'org.herddb', name: 'herddb-jdbc', version: herddbVersion) {
         exclude group: 'org.slf4j', module: 'slf4j-jdk14'
         }
