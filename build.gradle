@@ -13,33 +13,38 @@
  */
 
 buildscript {
-  ext {
-    springBootVersion = '2.0.2.RELEASE'
-  }
-  repositories {
-      maven {
-          url 'https://maven.aliyun.com/repository/public/'
-      }
-    mavenCentral()
-    mavenLocal()
-  }
-  dependencies {
-    classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-  }
+    ext {
+        springBootVersion = '2.0.2.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
 }
-
 plugins {
-    id "com.github.hierynomus.license" version "0.14.0"
+//    id "com.github.hierynomus.license" version "0.14.0"
     id "com.moowork.node" version "1.1.0"
     id "java"
     id "eclipse"
     id "idea"
 }
 
+
 repositories {
-    mavenCentral()
+    maven {
+        url 'https://maven.aliyun.com/repository/public/'
+    }
     mavenLocal()
+    mavenCentral()
 }
+
+//repositories {
+//    mavenCentral()
+//    mavenLocal()
+//}
 
 configurations {
     testPlugins {}
@@ -51,37 +56,39 @@ configurations {
 dependencies {
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.8.1'
-}
+//task wrapper(type: Wrapper) {
+//    gradleVersion = '7.6.1'
+//}
 
-apply from: 'gradle/license.gradle'
+//apply from: 'gradle/license.gradle'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'application'
 
 mainClassName = 'org.apache.pulsar.manager.PulsarManagerApplication'
 
-task licenseFormatNode(type: com.hierynomus.gradle.license.tasks.LicenseFormat) {
-    source = fileTree(dir: "src").include("**/*")
-    source = fileTree(dir: "front-end/src").include("**/*")
-}
-licenseFormat.dependsOn licenseFormatNode
+//task licenseFormatNode(type: com.hierynomus.gradle.license.tasks.LicenseFormat) {
+//    source = fileTree(dir: "src").include("**/*")
+//    source = fileTree(dir: "front-end/src").include("**/*")
+//}
+//licenseFormat.dependsOn licenseFormatNode
 
-task licenseCheckNode(type: com.hierynomus.gradle.license.tasks.LicenseCheck) {
-    source = fileTree(dir: "src").include("**/*")
-}
+//task licenseCheckNode(type: com.hierynomus.gradle.license.tasks.LicenseCheck) {
+//    source = fileTree(dir: "src").include("**/*")
+//}
 
 // Add VERSION
-task incrementVersion<<{
-    new File(projectDir, "VERSION").text = version
+task incrementVersion {
+    doLast {
+        new File(projectDir, "VERSION").text = version
+    }
 }
 
 dependencyManagement {
-  imports {
-    mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
-    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Finchley.SR2'
-  }
-  applyMavenExclusions = false
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Finchley.SR2'
+    }
+    applyMavenExclusions = false
 }
 
 distributions {
@@ -108,60 +115,61 @@ jar {
 ext['log4j2.version'] = '2.17.1'
 
 dependencies {
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springBootVersion
-    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: springBootVersion
-    compile group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: springMybatisVersion
-    compile group: 'com.github.pagehelper', name: 'pagehelper', version: pagehelperVersion
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: springBootVersion
-    compile group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion
-    compile group: 'com.mysql', name: 'mysql-connector-j', version: mysqlVersion
-    compile (group: 'org.herddb', name: 'herddb-jdbc', version: herddbVersion) {
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springBootVersion
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: springBootVersion
+    implementation group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: springMybatisVersion
+    implementation group: 'com.github.pagehelper', name: 'pagehelper', version: pagehelperVersion
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: springBootVersion
+    implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion
+    implementation group: 'com.mysql', name: 'mysql-connector-j', version: mysqlVersion
+    implementation(group: 'org.herddb', name: 'herddb-jdbc', version: herddbVersion) {
         exclude group: 'org.slf4j', module: 'slf4j-jdk14'
-        }
-    compile group: 'javax.validation', name: 'validation-api', version: javaxValidationVersion
-    compile group: 'org.hibernate', name: 'hibernate-validator', 'version': hibernateValidatorVersion
-    compile group: 'io.jsonwebtoken', name: 'jjwt-api', version: jsonWebTokenApiVersion
-    compile group: 'io.jsonwebtoken', name: 'jjwt-impl', version: jsonWebTokenImplVersion
-    compile group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: jsonWebTokenImplVersion
-    compile group: 'com.github.pagehelper', name: 'pagehelper-spring-boot-starter', version: pageHelperVersion
-    compile group: 'com.google.guava', name: 'guava', version: guavaVersion
-    compile group: 'com.google.code.gson', name: 'gson', version: gsonVersion
-    compile group: 'org.apache.pulsar', name: 'pulsar-common', version: pulsarVersion
-    compile group: 'org.apache.pulsar', name: 'pulsar-client-admin-original', version: pulsarVersion
-    compile group: 'org.apache.pulsar', name: 'pulsar-client-auth-athenz', version: pulsarVersion
-    compile group: 'org.apache.pulsar', name: 'pulsar-client-auth-sasl', version: pulsarVersion
-    compile group: 'com.yahoo.athenz', name: 'athenz-zts-java-client', version: athenzVersion
-    compile group: 'io.springfox', name: 'springfox-swagger2', version: swagger2Version
-    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: swaggeruiVersion
-    compile group: 'org.apache.pulsar', name: 'pulsar-broker', version: pulsarVersion
-    compile group: 'commons-validator', name: 'commons-validator', version: commonsValidatorVersion
-    compile (group: 'org.bkvm', name: 'bkvm', version: bkvmVersion, ext: 'war', classifier:'war-no-libs') {
+    }
+    implementation group: 'javax.validation', name: 'validation-api', version: javaxValidationVersion
+    implementation group: 'org.hibernate', name: 'hibernate-validator', 'version': hibernateValidatorVersion
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: jsonWebTokenApiVersion
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: jsonWebTokenImplVersion
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: jsonWebTokenImplVersion
+    implementation group: 'com.github.pagehelper', name: 'pagehelper-spring-boot-starter', version: pageHelperVersion
+    implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
+    implementation group: 'com.google.code.gson', name: 'gson', version: gsonVersion
+    implementation group: 'org.apache.pulsar', name: 'pulsar-common', version: pulsarVersion
+    implementation group: 'org.apache.pulsar', name: 'pulsar-client-admin-original', version: pulsarVersion
+    implementation group: 'org.apache.pulsar', name: 'pulsar-client-auth-athenz', version: pulsarVersion
+    implementation group: 'org.apache.pulsar', name: 'pulsar-client-auth-sasl', version: pulsarVersion
+    implementation group: 'com.yahoo.athenz', name: 'athenz-zts-java-client', version: athenzVersion
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: swagger2Version
+    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: swaggeruiVersion
+    implementation group: 'org.apache.pulsar', name: 'pulsar-broker', version: pulsarVersion
+    implementation group: 'commons-validator', name: 'commons-validator', version: commonsValidatorVersion
+    implementation(group: 'org.bkvm', name: 'bkvm', version: bkvmVersion, ext: 'war', classifier: 'war-no-libs') {
         exclude group: 'org.slf4j', module: 'slf4j-jdk14'
         exclude group: 'org.herddb', module: '*'
     }
-    compile (group: 'org.bkvm', name: 'bkvm', version: bkvmVersion, classifier:'classes') {
+    implementation(group: 'org.bkvm', name: 'bkvm', version: bkvmVersion, classifier: 'classes') {
         exclude group: 'org.slf4j', module: 'slf4j-jdk14'
         exclude group: 'org.herddb', module: '*'
     }
-    compile (group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: tomcatVersion)
-    compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet', version: jerseyVersion
-    compile group: 'org.glassfish.jersey.core', name: 'jersey-client', version: jerseyVersion
-    compile group: 'org.glassfish.jersey.inject', name: 'jersey-hk2', version: jerseyVersion
-    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: jerseyVersion
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
-    compile group: 'org.springframework.security', name: 'spring-security-config'
-    compile group: 'org.casbin', name: 'casdoor-spring-boot-starter', version: '1.3.0'
+    implementation(group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: tomcatVersion)
+    implementation group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet', version: jerseyVersion
+    implementation group: 'org.glassfish.jersey.core', name: 'jersey-client', version: jerseyVersion
+    implementation group: 'org.glassfish.jersey.inject', name: 'jersey-hk2', version: jerseyVersion
+    implementation group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: jerseyVersion
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+    implementation group: 'org.springframework.security', name: 'spring-security-config'
+    implementation group: 'org.casbin', name: 'casdoor-spring-boot-starter', version: '1.3.0'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
     compileOnly group: 'org.springframework.boot', name: 'spring-boot-devtools', version: springBootVersion
-    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
-    testCompile group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
-    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: apiMockitoVersion
-    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: mockitoJunit4Version
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
+    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: apiMockitoVersion
+    testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: mockitoJunit4Version
 
     constraints {
-        compile("org.bouncycastle:bcprov-jdk15on:${bouncycastleVersion}")
-        compile("org.bouncycastle:bcprov-ext-jdk15on:${bouncycastleVersion}")
-        compile("org.bouncycastle:bcpkix-jdk15on:${bouncycastleVersion}")
+        implementation("org.bouncycastle:bcprov-jdk15on:${bouncycastleVersion}")
+        implementation("org.bouncycastle:bcprov-ext-jdk15on:${bouncycastleVersion}")
+        implementation("org.bouncycastle:bcpkix-jdk15on:${bouncycastleVersion}")
     }
 }
